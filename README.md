@@ -1,27 +1,26 @@
-# vllm-betterd-for-gemma4-26b-a4b (中文文档)
+# vllm-betterd-for-gemma4-26b-a4b (中国语文档)
 
-[English](README_EN.md) | [中文说明](README.md)
+[English](README_EN.md) | [中国语说明](README.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Architecture](https://img.shields.io/badge/Architecture-Blackwell%20SM120-green.svg)]()
 [![Quantization](https://img.shields.io/badge/Quantization-NVFP4%20W4A4%20+%20FP8%20KV-orange.svg)]()
 [![Model](https://img.shields.io/badge/Model-Gemma4--26B--A4B-purple.svg)]()
 
-> **专为 NVIDIA Blackwell (SM120 / SM121) 架构优化的 Gemma4-26B-A4B NVFP4 高并发推理与算子级优化套件。**  
+> **为 NVIDIA Blackwell (SM120 / SM121) 优化的 Gemma4-26B-A4B NVFP4 推理与算子级优化套件, 最大提升decode speed 1.70 倍**  
 
-请以README_CN.md 为准. if 有出入两者.
 ---
 
-## 项目背景与核心挑战
+## Background
 
-**Gemma4-26B-A4B** 是一款具有革新性结构的高能效混合专家模型：
+已知**Gemma4-26B-A4B** 是一款具有革新性结构的高能效混合专家模型：
 * **总参数量 26B**，单 Token 仅激活 **4B 参数**（从 128 个细粒度专家中动态路由 Top-8）。
 * **异构注意力头维度**：
   - 滑动窗口注意力（SWA）：`head_dim = 256`，`sliding_window = 1024`。
   - 全局注意力（Global Attention）：`head_dim = 512`。
 * **NVFP4 (W4A4) 细粒度块量化**：权重与激活值均采用 Block Size = 16 的微块量化缩放，结合 FP8 KV Cache 实现极致显存压缩。
 
-但在 **NVIDIA Blackwell SM120** 架构（RTX Pro 6000 Ada-Next / DGX Spark）上运行原生 vLLM 时，会触发严重的架构级性能瓶颈：
+但搁 **NVIDIA Blackwell SM120** 架构（俺搁 RTX 6000D and RTX PRO 6000 上面测试的）上运行原生 vLLM 时，会触发架构级性能瓶颈：
 
 | 原生 vLLM 瓶颈 | 物理根因 | 本项目 (`vllm-betterd`) 解决方案 | 真实业务收益 |
 | :--- | :--- | :--- | :--- |
