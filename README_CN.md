@@ -1,6 +1,6 @@
 # vllm-betterd-for-gemma4-26b-a4b (中文文档)
 
-[English](README.md) | [中文说明](README_CN.md)
+[English](README_EN.md) | [中文说明](README.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Architecture](https://img.shields.io/badge/Architecture-Blackwell%20SM120-green.svg)]()
