@@ -6,7 +6,6 @@
 [![Model](https://img.shields.io/badge/Model-Gemma4--26B--A4B-purple.svg)]()
 
 > **High-Throughput Blackwell (SM120) Operator & Inference Optimization Suite for Gemma4-26B-A4B NVFP4.**  
-> Developed & maintained by **XELF-encyclopedia**.
 
 ---
 
