@@ -10,7 +10,7 @@
 
 ---
 
-## 📌 Executive Summary & Motivation
+## Executive Summary & Motivation
 
 **Gemma4-26B-A4B** represents a breakthrough architecture featuring:
 * **26B Total Parameters**, with **4B Active Parameters** per token (Top-8 routing across 128 fine-grained experts).
@@ -30,7 +30,7 @@ However, running Gemma4-26B-A4B on **NVIDIA Blackwell SM120** (RTX Pro 6000 Ada-
 
 ---
 
-## 🚀 Benchmark Highlights (Real-World SM120 Verification)
+## Benchmark Highlights (Real-World SM120 Verification)
 
 ### 1. MoE Operator Microbenchmark (Latency in µs)
 Evaluated on SM120 with $E=128, \text{top\_k}=8, H=2816, I=704$:
@@ -57,7 +57,7 @@ Evaluated on SM120 with $E=128, \text{top\_k}=8, H=2816, I=704$:
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 vllm-betterd-for-gemma4-26b-a4b/
@@ -103,7 +103,7 @@ vllm-betterd-for-gemma4-26b-a4b/
 
 ---
 
-## ⚡ Quick Start Guide
+## Quick Start Guide
 
 ### Step 1: Environment Verification
 Ensure your environment meets the prerequisites:
@@ -153,7 +153,7 @@ For detailed theoretical derivations, roofline models, and empirical data, refer
 
 ---
 
-## 📄 License & Attribution
+## License & Attribution
 
 This project is licensed under the **Apache License 2.0**.  
 Patches and operator extensions are designed for seamless upstream integration into [vLLM](https://github.com/vllm-project/vllm) and [FlashInfer](https://github.com/flashinfer-ai/flashinfer).
