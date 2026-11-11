@@ -22,7 +22,7 @@
 
 但搁 **NVIDIA Blackwell SM120** 架构（俺搁 RTX 6000D and RTX PRO 6000 上面测试的）上运行原生 vLLM 时，会触发架构级性能瓶颈：
 
-| 原生 vLLM 瓶颈 | 物理根因 | 本项目 (`vllm-betterd`) 解决方案 | 真实业务收益 |
+| 原生 vLLM 瓶颈 | 物理根因 | 本项目解决方案 | 真实业务收益 |
 | :--- | :--- | :--- | :--- |
 | **注意力后端全面降级** | FlashInfer XQA 不支持 `head_dim = 512`，导致全模型 KV Cache 组整体回退至未经优化的高延迟原生路径。 | **异构混合注意力引擎**：$D=256$ 走 FlashInfer XQA TensorCore 极速解码；$D=512$ 基于统一 XQA 元数据管道混合调度 Triton Unified Attention 3D 分段解码。 | **注意力算子提速 1.85×**；消除回退卡顿与抖动。 |
 | **MoE 解码带宽与对齐瓶颈** | Gemma4 专家中间维度 $I=704$（非 2 的幂次），导致 CUTLASS 在 $M \le 64$ 的小 Batch 解码阶段产生 Bank 冲突与 Tile 调度开销，且受制于显存带宽。 | **`FlashInferB12xExperts`（CuteDSL + CUTLASS 动态分发）**：解码阶段（$M \le 64$）走 FlashInfer CuteDSL B12x 静态微算子；Prefill 阶段（$M > 64$）无缝切回 CUTLASS Grouped GEMM。 | **MoE 解码延迟最高降低 1.40×**；支持 In-Place 输出缓冲区原地复用与跨层 Workspace 共享。 |
@@ -59,7 +59,7 @@
 | **40 路并发** | 0.82 s | 1.15 s | 46.2 tok/s | 1,848 tok/s | **100% 达标** |
 | **64 路并发** | 1.34 s | 1.88 s | 38.5 tok/s | 2,464 tok/s | **100% 达标** |
 | **96 路并发** | 2.15 s | 2.94 s | 32.8 tok/s | 3,148 tok/s | **100% 达标** |
-| **128 路并发** | 3.42 s | 4.86 s | 26.4 tok/s | 3,379 tok/s | TTFT $\le 6$s 完全满足 |
+| **128 路并发** | 3.42 s | 4.86 s | 26.4 tok/s | 3,379 tok/s | TTFT < 6s 完全满足 |
 
 ---
 
