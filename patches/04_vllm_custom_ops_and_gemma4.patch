@@ -1,0 +1,20 @@
+--- a/vllm/_custom_ops.py
++++ b/vllm/_custom_ops.py
+@@ -52,6 +52,7 @@
+     assert not current_platform.is_rocm()
+     assert input.ndim >= 1, f"input.ndim needs to be >= 1, but got {input.ndim}."
+-    other_dims = 1 if input.ndim == 1 else -1
+-    input = input.reshape(other_dims, input.shape[-1])
++    if input.ndim != 2:
++        other_dims = 1 if input.ndim == 1 else -1
++        input = input.reshape(other_dims, input.shape[-1])
+     m, n = input.shape
+--- a/vllm/model_executor/models/gemma4.py
++++ b/vllm/model_executor/models/gemma4.py
+@@ -71,6 +71,3 @@
+         hidden_states = self.post_attention_layernorm(hidden_states)
+-        hidden_states = hidden_states + residual
+-        residual = hidden_states
+-
+-        hidden_states = self.pre_feedforward_layernorm(hidden_states)
++        hidden_states, residual = self.pre_feedforward_layernorm(hidden_states, residual)

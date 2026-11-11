@@ -1,0 +1,13 @@
+--- a/flashinfer/fused_moe/cute_dsl/b12x_moe.py
++++ b/flashinfer/fused_moe/cute_dsl/b12x_moe.py
+@@ -35,6 +35,7 @@
+         fc2_input_scale: Optional[torch.Tensor] = None,
+         input_global_scale: Optional[torch.Tensor] = None,
++        output: Optional[torch.Tensor] = None,
+     ) -> torch.Tensor:
+@@ -45,4 +46,6 @@
+-        if self.use_cuda_graph:
++        if output is not None:
++            moe_output = output[:num_tokens]
++        elif self.use_cuda_graph:
+             moe_output = self._moe_output[:num_tokens]

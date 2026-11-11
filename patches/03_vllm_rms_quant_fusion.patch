@@ -1,0 +1,30 @@
+--- a/vllm/compilation/passes/fusion/rms_quant_fusion.py
++++ b/vllm/compilation/passes/fusion/rms_quant_fusion.py
+@@ -35,6 +35,26 @@
+ _FLASHINFER_ADD_RMSNORM_FP4QUANT: Any | None = None
++_FLASHINFER_RMSNORM_FP4QUANT: Any | None = None
++
++def _flashinfer_rms_norm_nvfp4_quant(
++    result: torch.Tensor,
++    result_block_scale: torch.Tensor,
++    input: torch.Tensor,
++    weight: torch.Tensor,
++    input_global_scale: torch.Tensor,
++    block_scale_unswizzled: torch.Tensor,
++    is_sf_swizzled_layout: bool,
++    epsilon: float,
++) -> None:
++    assert _FLASHINFER_RMSNORM_FP4QUANT is not None
++    _FLASHINFER_RMSNORM_FP4QUANT(
++        input,
++        weight,
++        y_fp4=result.view(torch.float4_e2m1fn_x2),
++        block_scale=result_block_scale.view(torch.float8_e4m3fn),
++        global_scale=input_global_scale.reshape(1),
++        eps=epsilon,
++        block_size=16,
++        scale_format="e4m3",
++        is_sf_swizzled_layout=is_sf_swizzled_layout,
++        output_both_sf_layouts=False,
++        block_scale_unswizzled=block_scale_unswizzled,
++    )

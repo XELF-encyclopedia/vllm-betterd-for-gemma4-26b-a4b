@@ -1,0 +1,40 @@
+--- a/vllm/v1/attention/backends/flashinfer.py
++++ b/vllm/v1/attention/backends/flashinfer.py
+@@ -10,6 +10,7 @@
+ from vllm.v1.attention.ops.merge_attn_states import merge_attn_states
++from vllm.v1.attention.ops.triton_unified_attention import unified_attention
+ 
+@@ -105,7 +106,7 @@
+         if (
+             self.flashinfer_trtllm_api_decode_kernel == FlashInferDecodeKernel.XQA
+             and not _is_xqa_head_dim_supported(self.head_dim)
+         ):
+-            logger.warning_once(
+-                "FlashInfer XQA decode does not support head_dim=%d; "
+-                "reverting this KV-cache group to native FlashInfer decode.",
+-                self.head_dim,
+-            )
+-            self.use_trtllm_decode_attention = False
+-            self.flashinfer_trtllm_api_decode_kernel = None
++            logger.info_once(
++                "FlashInfer XQA decode does not support head_dim=%d; "
++                "using Triton unified_attention decode with XQA metadata for this KV-cache group.",
++                self.head_dim,
++            )
+ 
+@@ -215,6 +216,14 @@
+         self.paged_kv_last_page_len = CpuGpuBuffer(
+             max_num_reqs, dtype=torch.int32, device=self.device, pin_memory=False
+         )
++        self._pinned_qo_indptr_prefill = torch.zeros(
++            max_num_reqs + 1, dtype=torch.int32, pin_memory=PIN_MEMORY
++        )
++        self._pinned_kv_indptr_prefill = torch.zeros(
++            max_num_reqs + 1, dtype=torch.int32, pin_memory=PIN_MEMORY
++        )
++        self._pinned_last_page_len_prefill = torch.zeros(
++            max_num_reqs, dtype=torch.int32, pin_memory=PIN_MEMORY
++        )
++        self._pinned_kv_lens_prefill = torch.zeros(
++            max_num_reqs, dtype=torch.int32, pin_memory=PIN_MEMORY
++        )
